@@ -1,0 +1,63 @@
+import googlemaps
+from datetime import datetime
+
+def get_directions(api_key, origin, destination, mode='driving', departure_time='now'):
+    gmaps = googlemaps.Client(key=api_key)
+
+    # Get directions
+    directions_result = gmaps.directions(
+        origin,
+        destination,
+        mode=mode,
+        departure_time=departure_time
+    )
+
+    return directions_result
+
+def find_rides(riders_location, destination, max_distance=5):
+    # In a real-world scenario, you'd have a database of available rides
+    # Here, I'm just using a simple condition for demonstration
+    available_rides = [
+        {'driver': 'John', 'location': 'Karachi University', 'capacity': 3},
+        {'driver': 'Alice', 'location': 'Clifton', 'capacity': 2},
+        # Add more rides as needed
+    ]
+
+    matching_rides = []
+
+    for ride in available_rides:
+        distance = calculate_distance(riders_location, ride['location'])
+        if distance <= max_distance and ride['capacity'] > 0:
+            matching_rides.append(ride)
+
+    return matching_rides
+
+def calculate_distance(origin, destination):
+    # In a real-world scenario, you'd use a proper distance calculation method
+    # Here, I'm using a simple placeholder
+    return abs(ord(origin[0]) - ord(destination[0]))
+
+if __name__ == '__main__':
+    # Replace 'YOUR_GOOGLE_MAPS_API_KEY' with your actual API key
+    google_maps_api_key = 'YOUR_GOOGLE_MAPS_API_KEY'
+
+    # Rider's location and destination
+    rider_location = 'Karachi Airport'
+    rider_destination = 'Saddar'
+
+    # Find available rides
+    available_rides = find_rides(rider_location, rider_destination)
+
+    if not available_rides:
+        print('No available rides found.')
+    else:
+        print('Available rides:')
+        for ride in available_rides:
+            print(f"Driver: {ride['driver']}, Location: {ride['location']}, Capacity: {ride['capacity']}")
+
+    # Get directions from rider's location to destination using Google Maps API
+    directions = get_directions(google_maps_api_key, rider_location, rider_destination)
+
+    print('\nDirections:')
+    for step in directions[0]['legs'][0]['steps']:
+        print(step['html_instructions'])
